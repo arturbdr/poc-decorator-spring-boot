@@ -28,14 +28,16 @@ public class LogPerformanceImpl {
     // Check ServiceExampleA to see how to use the annotation
     @Around("@annotation(LogPerformance)")
     public Object logPerformance(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        final String className = proceedingJoinPoint.getSignature().getDeclaringType().getName();
         final String methodName = proceedingJoinPoint.getSignature().getName();
-        final StopWatch stopWatch = new StopWatch(methodName);
+        final String classAndMethod = className.concat(".").concat(methodName);
+        final StopWatch stopWatch = new StopWatch(classAndMethod);
         stopWatch.start();
         try {
             return proceedingJoinPoint.proceed();
         } finally {
             stopWatch.stop();
-            log.info("{} took {} milliseconds to process", methodName, stopWatch.getTotalTimeMillis());
+            log.info("{} took {} milliseconds to process", classAndMethod, stopWatch.getTotalTimeMillis());
         }
     }
 }
